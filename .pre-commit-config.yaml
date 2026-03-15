@@ -1,0 +1,33 @@
+default_stages: [manual]
+minimum_pre_commit_version: "4.0.0"
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-json
+        name: integration ha metadata json
+        files: ^custom_components/iris/(manifest\.json|strings\.json|translations/.*\.json)$
+      - id: check-yaml
+        name: integration ha yaml
+        files: ^custom_components/iris/services\.yaml$
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.13
+    hooks:
+      - id: ruff-check
+        name: integration ruff
+        args: [--config=pyproject.toml]
+        files: ^(custom_components|tests)/.*\.py$
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.21.2
+    hooks:
+      - id: pyupgrade
+        name: integration pyupgrade
+        args: [--py314-plus]
+        files: ^(custom_components|tests)/.*\.py$

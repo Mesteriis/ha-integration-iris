@@ -21,6 +21,7 @@ The integration is server-driven:
 ```bash
 pyenv shell 3.14.2
 uv sync --group dev --python 3.14.2
+uv run pre-commit run --all-files
 uv run ruff check custom_components tests
 uv run pytest tests -q
 ```
