@@ -1,0 +1,50 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Подключение к IRIS",
+        "description": "Укажите URL backend IRIS.",
+        "data": {
+          "api_url": "URL IRIS",
+          "token": "Токен авторизации"
+        }
+      },
+      "zeroconf_confirm": {
+        "title": "Подключить обнаруженный экземпляр IRIS",
+        "description": "Подтвердите подключение к {name} по адресу {host}.",
+        "data": {
+          "token": "Токен авторизации"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Повторное подключение IRIS",
+        "description": "Введите новый токен авторизации для настроенного экземпляра IRIS.",
+        "data": {
+          "token": "Токен авторизации"
+        }
+      },
+      "reconfigure": {
+        "title": "Перенастроить IRIS",
+        "description": "Обновите URL backend для {name}.",
+        "data": {
+          "api_url": "URL IRIS"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Не удалось подключиться к IRIS.",
+      "invalid_auth": "Учетные данные IRIS недействительны.",
+      "invalid_bootstrap": "IRIS вернул некорректный bootstrap payload.",
+      "unsupported_protocol": "Этот backend IRIS использует неподдерживаемую версию протокола.",
+      "integration_too_old": "Текущая версия интеграции слишком старая для backend IRIS.",
+      "wrong_account": "Выбранный экземпляр IRIS не совпадает с настроенной записью."
+    },
+    "abort": {
+      "already_configured": "Этот экземпляр IRIS уже настроен.",
+      "invalid_discovery": "Обнаруженные метаданные сервиса IRIS некорректны.",
+      "reauth_successful": "Учетные данные IRIS обновлены.",
+      "reconfigure_successful": "URL backend IRIS обновлен.",
+      "unknown_entry": "Не удалось найти запись конфигурации IRIS."
+    }
+  }
+}
