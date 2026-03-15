@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 import logging
+from collections.abc import Callable
 from copy import deepcopy
 from typing import Any
 
@@ -32,6 +34,7 @@ from .store import IrisRuntimeStore
 
 _LOGGER = logging.getLogger(__name__)
 _DASHBOARD_ICON = "mdi:view-dashboard-outline"
+_DASHBOARD_SYNC_DEBOUNCE_SECONDS = 0.25
 
 
 class IrisDashboardRuntime:
@@ -41,17 +44,60 @@ class IrisDashboardRuntime:
         self._store = store
         self._last_published_fingerprint: tuple[Any, ...] | None = None
         self._last_render_hash: str | None = None
+        self._remove_store_listener: Callable[[], None] | None = None
+        self._scheduled_sync_task: asyncio.Task[None] | None = None
+        self._scheduled_reason = "runtime_store_updated"
+        self._scheduled_force = False
         self._summary = _dashboard_summary({})
 
     async def async_setup(self) -> None:
+        self._remove_store_listener = self._store.add_listener(self._handle_store_update)
         await self._async_publish_and_sync(reason="initial_load", force=True)
+
+    async def async_stop(self) -> None:
+        if self._remove_store_listener is not None:
+            self._remove_store_listener()
+            self._remove_store_listener = None
+        if self._scheduled_sync_task is not None:
+            self._scheduled_sync_task.cancel()
+            self._scheduled_sync_task = None
 
     @callback
     def handle_dashboard_refresh(self) -> None:
-        self._hass.async_create_task(self._async_publish_and_sync(reason="dashboard_changed"))
+        self._schedule_sync(reason="dashboard_changed")
 
     def summary(self) -> dict[str, Any]:
         return deepcopy(self._summary)
+
+    @callback
+    def _handle_store_update(self) -> None:
+        self._schedule_sync(reason="runtime_store_updated")
+
+    @callback
+    def _schedule_sync(self, *, reason: str, force: bool = False) -> None:
+        self._scheduled_reason = reason
+        self._scheduled_force = self._scheduled_force or force
+        if self._scheduled_sync_task is not None:
+            self._scheduled_sync_task.cancel()
+        self._scheduled_sync_task = self._hass.async_create_background_task(
+            self._async_run_scheduled_sync(),
+            f"{DOMAIN}_dashboard_sync",
+        )
+
+    async def _async_run_scheduled_sync(self) -> None:
+        current_task = asyncio.current_task()
+        try:
+            await asyncio.sleep(_DASHBOARD_SYNC_DEBOUNCE_SECONDS)
+            await self._async_publish_and_sync(
+                reason=self._scheduled_reason,
+                force=self._scheduled_force,
+            )
+        except asyncio.CancelledError:
+            raise
+        finally:
+            if self._scheduled_sync_task is current_task:
+                self._scheduled_force = False
+                self._scheduled_sync_task = None
 
     async def _async_publish_and_sync(self, *, reason: str, force: bool = False) -> None:
         summary = _dashboard_summary(self._store.dashboard)
@@ -63,14 +109,19 @@ class IrisDashboardRuntime:
                 summary["lovelace_synced"] = False
                 summary["lovelace_error"] = str(exc)
                 summary["lovelace_render_hash"] = self._last_render_hash
+                summary["lovelace_management_mode"] = "managed"
+                summary["lovelace_override_detected"] = False
+                summary["lovelace_current_hash"] = None
             else:
                 summary.update(sync_result)
-                summary["lovelace_synced"] = True
+                summary["lovelace_synced"] = sync_result["lovelace_management_mode"] == "managed"
                 summary["lovelace_error"] = None
-                self._last_render_hash = sync_result["lovelace_render_hash"]
         elif summary["loaded"]:
             summary["lovelace_synced"] = False
             summary["lovelace_error"] = "dashboard_capability_disabled"
+            summary["lovelace_management_mode"] = "disabled"
+            summary["lovelace_override_detected"] = False
+            summary["lovelace_current_hash"] = None
 
         self._summary = summary
         if not summary["loaded"]:
@@ -113,14 +164,21 @@ class IrisDashboardRuntime:
         )
         config = self._render_lovelace_config()
         render_hash = _dashboard_hash(config)
-        await _async_save_dashboard_config(
+        save_result = await _async_save_dashboard_config(
             self._hass,
             metadata=metadata,
             config=config,
+            expected_previous_hash=self._last_render_hash,
+            new_render_hash=render_hash,
         )
+        if save_result["lovelace_management_mode"] == "managed":
+            self._last_render_hash = render_hash
         return {
             "lovelace_dashboard_url_path": self._dashboard_url_path,
             "lovelace_render_hash": render_hash,
+            "lovelace_current_hash": save_result["lovelace_current_hash"],
+            "lovelace_management_mode": save_result["lovelace_management_mode"],
+            "lovelace_override_detected": save_result["lovelace_override_detected"],
         }
 
     @property
@@ -249,13 +307,14 @@ class IrisDashboardRuntime:
 
     def _render_collection_widget(self, widget: dict[str, Any]) -> dict[str, Any]:
         source = str(widget.get("source") or "")
-        content = _format_collection_widget(
+        config = widget.get("config", {})
+        return _render_collection_widget_card(
             title=str(widget.get("title") or "Widget"),
             kind=str(widget.get("kind") or ""),
             source=source,
-            data=self._store.collections.get(source),
+            data=_resolve_collection_data(self._store.collections.get(source), config=config),
+            config=config if isinstance(config, dict) else {},
         )
-        return _markdown_card(title=str(widget.get("title") or "Widget"), content=content)
 
     def _resolve_entity_ids(self, entity_keys: Any) -> list[str]:
         if not isinstance(entity_keys, list):
@@ -381,7 +440,9 @@ async def _async_save_dashboard_config(
     *,
     metadata: dict[str, Any],
     config: dict[str, Any],
-) -> None:
+    expected_previous_hash: str | None,
+    new_render_hash: str,
+) -> dict[str, Any]:
     dashboards = hass.data[LOVELACE_DOMAIN]["dashboards"]
     url_path = str(metadata[CONF_URL_PATH])
     config_store = dashboards.get(url_path)
@@ -396,9 +457,25 @@ async def _async_save_dashboard_config(
         current_config = await config_store.async_load(False)
     except ConfigNotFound:
         current_config = None
+    current_hash = _dashboard_hash(current_config) if isinstance(current_config, dict) else None
+    if current_config is not None and current_hash not in {expected_previous_hash, new_render_hash}:
+        return {
+            "lovelace_current_hash": current_hash,
+            "lovelace_management_mode": "local_override",
+            "lovelace_override_detected": True,
+        }
     if current_config == config:
-        return
+        return {
+            "lovelace_current_hash": current_hash or new_render_hash,
+            "lovelace_management_mode": "managed",
+            "lovelace_override_detected": False,
+        }
     await config_store.async_save(config)
+    return {
+        "lovelace_current_hash": new_render_hash,
+        "lovelace_management_mode": "managed",
+        "lovelace_override_detected": False,
+    }
 
 
 @callback
@@ -433,6 +510,9 @@ def _dashboard_summary(dashboard: dict[str, Any]) -> dict[str, Any]:
             "lovelace_render_hash": None,
             "lovelace_synced": False,
             "lovelace_error": None,
+            "lovelace_current_hash": None,
+            "lovelace_management_mode": "managed",
+            "lovelace_override_detected": False,
         }
 
     views = dashboard.get("views", [])
@@ -473,6 +553,9 @@ def _dashboard_summary(dashboard: dict[str, Any]) -> dict[str, Any]:
         "lovelace_render_hash": None,
         "lovelace_synced": False,
         "lovelace_error": None,
+        "lovelace_current_hash": None,
+        "lovelace_management_mode": "managed",
+        "lovelace_override_detected": False,
     }
 
 
@@ -488,64 +571,124 @@ def _markdown_card(*, title: str | None, content: str) -> dict[str, Any]:
     return card
 
 
-def _format_collection_widget(*, title: str, kind: str, source: str, data: Any) -> str:
+def _render_collection_widget_card(
+    *,
+    title: str,
+    kind: str,
+    source: str,
+    data: Any,
+    config: dict[str, Any],
+) -> dict[str, Any]:
     if kind == "chart_placeholder":
-        return f"_{title}_ is advertised by IRIS as `{source}`, but chart rendering is not wired yet."
+        return _markdown_card(
+            title=title,
+            content=f"_{title}_ is advertised by IRIS as `{source}`, but chart rendering is not wired yet.",
+        )
     if data in (None, {}, []):
-        return f"_No data available for `{source}` yet._"
-    if kind == "table":
-        return _format_table_markdown(data)
+        return _markdown_card(title=title, content=f"_No data available for `{source}` yet._")
+
+    item_cards = _collection_item_cards(kind=kind, data=data, config=config)
+    if not item_cards:
+        return _markdown_card(
+            title=title,
+            content=f"_No collection items could be rendered for `{source}` yet._",
+        )
+
     if kind in {"list", "timeline"}:
-        return _format_list_markdown(data)
-    return _format_summary_markdown(data)
+        return {
+            "type": "vertical-stack",
+            "cards": [_markdown_card(title=None, content=f"### {title}"), *item_cards],
+        }
+
+    columns = max(1, min(_as_positive_int(config.get("grid_columns"), default=2), 3))
+    return {
+        "type": "vertical-stack",
+        "cards": [
+            _markdown_card(title=None, content=f"### {title}"),
+            {
+                "type": "grid",
+                "columns": columns,
+                "square": False,
+                "cards": item_cards,
+            },
+        ],
+    }
 
 
-def _format_table_markdown(data: Any) -> str:
-    if isinstance(data, dict) and data and all(isinstance(value, dict) for value in data.values()):
-        keys = list(data.keys())[:8]
-        columns = sorted({column for key in keys for column in data[key]})[:4]
-        header = "| Key | " + " | ".join(columns) + " |"
-        separator = "| --- | " + " | ".join(["---"] * len(columns)) + " |"
-        rows = [
-            "| "
-            + key
-            + " | "
-            + " | ".join(_compact_markdown_value(data[key].get(column)) for column in columns)
-            + " |"
-            for key in keys
-        ]
-        return "\n".join([header, separator, *rows])
-    if isinstance(data, list) and data and all(isinstance(item, dict) for item in data):
-        columns = sorted({column for item in data[:8] for column in item})[:4]
-        header = "| " + " | ".join(columns) + " |"
-        separator = "| " + " | ".join(["---"] * len(columns)) + " |"
-        rows = [
-            "| " + " | ".join(_compact_markdown_value(item.get(column)) for column in columns) + " |"
-            for item in data[:8]
-        ]
-        return "\n".join([header, separator, *rows])
-    return _format_list_markdown(data)
+def _resolve_collection_data(data: Any, *, config: dict[str, Any]) -> Any:
+    path = config.get("path")
+    if isinstance(path, str) and path and isinstance(data, dict):
+        return deepcopy(data.get(path))
+    return deepcopy(data)
 
 
-def _format_list_markdown(data: Any) -> str:
+def _collection_item_cards(*, kind: str, data: Any, config: dict[str, Any]) -> list[dict[str, Any]]:
+    rows = _collection_rows(data, config=config)
+    cards: list[dict[str, Any]] = []
+    for label, payload in rows:
+        fields = _collection_fields(payload, config=config)
+        lines = [f"**{_titleize(field)}**: {_compact_markdown_value(payload.get(field))}" for field in fields]
+        if not lines:
+            lines = [_compact_markdown_value(payload)]
+        cards.append(_markdown_card(title=label, content="\n".join(lines)))
+    if kind == "summary" and not cards:
+        return [_markdown_card(title=None, content=_compact_markdown_value(data))]
+    return cards
+
+
+def _collection_rows(data: Any, *, config: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
+    max_items = _as_positive_int(config.get("max_items"), default=6)
     if isinstance(data, dict):
-        items = list(data.items())[:8]
-        return "\n".join(f"- **{key}**: {_compact_markdown_value(value)}" for key, value in items)
+        if data and all(isinstance(value, dict) for value in data.values()):
+            rows: list[tuple[str, dict[str, Any]]] = []
+            for key, value in list(data.items())[:max_items]:
+                payload = deepcopy(value)
+                payload.setdefault("symbol", key)
+                rows.append((str(key), payload))
+            return rows
+        return [("Summary", dict(data))]
     if isinstance(data, list):
-        return "\n".join(f"- {_compact_markdown_value(item)}" for item in data[:8])
-    return f"- {_compact_markdown_value(data)}"
+        rows = []
+        for index, item in enumerate(data[:max_items], start=1):
+            if isinstance(item, dict):
+                label = (
+                    item.get("symbol")
+                    or item.get("name")
+                    or item.get("prediction_event")
+                    or f"Item {index}"
+                )
+                rows.append((str(label), deepcopy(item)))
+            else:
+                rows.append((f"Item {index}", {"value": item}))
+        return rows
+    return [("Value", {"value": data})]
 
 
-def _format_summary_markdown(data: Any) -> str:
-    if isinstance(data, dict):
-        return "\n".join(f"- **{key}**: {_compact_markdown_value(value)}" for key, value in list(data.items())[:8])
-    return _compact_markdown_value(data)
+def _collection_fields(payload: Any, *, config: dict[str, Any]) -> list[str]:
+    if not isinstance(payload, dict):
+        return ["value"]
+    configured = config.get("columns") or config.get("fields")
+    if isinstance(configured, list):
+        fields = [str(field) for field in configured if isinstance(field, str) and field in payload]
+        if fields:
+            return fields
+    return list(payload)[:4]
+
+
+def _as_positive_int(value: Any, *, default: int) -> int:
+    if isinstance(value, int) and value > 0:
+        return value
+    return default
 
 
 def _compact_markdown_value(value: Any) -> str:
     if isinstance(value, str | int | float | bool) or value is None:
         return str(value)
     return json.dumps(value, sort_keys=True, separators=(",", ":"))
+
+
+def _titleize(value: str) -> str:
+    return value.replace("_", " ").strip().title()
 
 
 def _url_slug(value: str) -> str:

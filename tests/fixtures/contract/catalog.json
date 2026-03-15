@@ -1,0 +1,608 @@
+{
+  "catalog_version": "sha1:7d0a2802cbca",
+  "protocol_version": 1,
+  "mode": "full",
+  "entities": [
+    {
+      "entity_key": "system.connection",
+      "platform": "binary_sensor",
+      "name": "IRIS Connection",
+      "state_source": "system.connection",
+      "command_key": null,
+      "icon": "mdi:lan-connect",
+      "category": "diagnostic",
+      "default_enabled": true,
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null,
+      "entity_registry_enabled_default": true,
+      "device_class": "connectivity",
+      "unit_of_measurement": null
+    },
+    {
+      "entity_key": "system.mode",
+      "platform": "sensor",
+      "name": "IRIS Mode",
+      "state_source": "system.mode",
+      "command_key": null,
+      "icon": "mdi:server-network",
+      "category": "diagnostic",
+      "default_enabled": true,
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null,
+      "entity_registry_enabled_default": true,
+      "device_class": null,
+      "unit_of_measurement": null
+    },
+    {
+      "entity_key": "market.summary.active_assets_count",
+      "platform": "sensor",
+      "name": "Active Assets",
+      "state_source": "market.summary.active_assets_count",
+      "command_key": null,
+      "icon": "mdi:chart-bubble",
+      "category": null,
+      "default_enabled": true,
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null,
+      "entity_registry_enabled_default": true,
+      "device_class": null,
+      "unit_of_measurement": "assets"
+    },
+    {
+      "entity_key": "market.summary.hot_assets_count",
+      "platform": "sensor",
+      "name": "Hot Assets",
+      "state_source": "market.summary.hot_assets_count",
+      "command_key": null,
+      "icon": "mdi:fire",
+      "category": null,
+      "default_enabled": true,
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null,
+      "entity_registry_enabled_default": true,
+      "device_class": null,
+      "unit_of_measurement": "assets"
+    },
+    {
+      "entity_key": "portfolio.summary.portfolio_value",
+      "platform": "sensor",
+      "name": "Portfolio Value",
+      "state_source": "portfolio.summary.portfolio_value",
+      "command_key": null,
+      "icon": "mdi:wallet",
+      "category": null,
+      "default_enabled": true,
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null,
+      "entity_registry_enabled_default": true,
+      "device_class": null,
+      "unit_of_measurement": "USD"
+    },
+    {
+      "entity_key": "portfolio.summary.open_positions",
+      "platform": "sensor",
+      "name": "Open Positions",
+      "state_source": "portfolio.summary.open_positions",
+      "command_key": null,
+      "icon": "mdi:briefcase-outline",
+      "category": null,
+      "default_enabled": true,
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null,
+      "entity_registry_enabled_default": true,
+      "device_class": null,
+      "unit_of_measurement": "positions"
+    },
+    {
+      "entity_key": "notifications.enabled",
+      "platform": "binary_sensor",
+      "name": "Notifications Enabled",
+      "state_source": "notifications.enabled",
+      "command_key": null,
+      "icon": "mdi:bell-ring-outline",
+      "category": null,
+      "default_enabled": true,
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null,
+      "entity_registry_enabled_default": true,
+      "device_class": null,
+      "unit_of_measurement": null
+    },
+    {
+      "entity_key": "settings.notifications_enabled",
+      "platform": "switch",
+      "name": "Notifications Enabled",
+      "state_source": "settings.notifications_enabled",
+      "command_key": "settings.notifications_enabled.set",
+      "icon": "mdi:bell-ring-outline",
+      "category": "config",
+      "default_enabled": true,
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null,
+      "entity_registry_enabled_default": true,
+      "device_class": null,
+      "unit_of_measurement": null
+    },
+    {
+      "entity_key": "settings.default_timeframe",
+      "platform": "select",
+      "name": "Default Timeframe",
+      "state_source": "settings.default_timeframe",
+      "command_key": "settings.default_timeframe.set",
+      "icon": "mdi:timeline-clock-outline",
+      "category": "config",
+      "default_enabled": true,
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null,
+      "entity_registry_enabled_default": true,
+      "device_class": null,
+      "unit_of_measurement": null
+    },
+    {
+      "entity_key": "actions.portfolio_sync",
+      "platform": "button",
+      "name": "Portfolio Sync",
+      "state_source": "actions.portfolio_sync",
+      "command_key": "portfolio.sync",
+      "icon": "mdi:sync",
+      "category": "config",
+      "default_enabled": true,
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null,
+      "entity_registry_enabled_default": true,
+      "device_class": null,
+      "unit_of_measurement": null
+    },
+    {
+      "entity_key": "actions.market_refresh",
+      "platform": "button",
+      "name": "Market Refresh",
+      "state_source": "actions.market_refresh",
+      "command_key": "market.refresh",
+      "icon": "mdi:refresh-circle",
+      "category": "config",
+      "default_enabled": true,
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null,
+      "entity_registry_enabled_default": true,
+      "device_class": null,
+      "unit_of_measurement": null
+    }
+  ],
+  "collections": [
+    {
+      "collection_key": "assets.snapshot",
+      "kind": "mapping",
+      "transport": "websocket",
+      "dashboard_only": true,
+      "since_version": "2026.03.15"
+    },
+    {
+      "collection_key": "portfolio.snapshot",
+      "kind": "summary",
+      "transport": "websocket",
+      "dashboard_only": false,
+      "since_version": "2026.03.15"
+    },
+    {
+      "collection_key": "predictions.snapshot",
+      "kind": "mapping",
+      "transport": "websocket",
+      "dashboard_only": true,
+      "since_version": "2026.03.15"
+    },
+    {
+      "collection_key": "integrations.snapshot",
+      "kind": "mapping",
+      "transport": "websocket",
+      "dashboard_only": true,
+      "since_version": "2026.03.15"
+    }
+  ],
+  "commands": [
+    {
+      "command_key": "portfolio.sync",
+      "name": "Portfolio Sync",
+      "kind": "refresh",
+      "input_schema": null,
+      "returns": "operation",
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null
+    },
+    {
+      "command_key": "market.refresh",
+      "name": "Market Refresh",
+      "kind": "refresh",
+      "input_schema": null,
+      "returns": "operation",
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null
+    },
+    {
+      "command_key": "settings.notifications_enabled.set",
+      "name": "Set Notifications Enabled",
+      "kind": "toggle",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "boolean"
+          }
+        },
+        "required": ["value"],
+        "additionalProperties": false
+      },
+      "returns": "operation",
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null
+    },
+    {
+      "command_key": "settings.default_timeframe.set",
+      "name": "Set Default Timeframe",
+      "kind": "selection",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "enum": ["15m", "1h", "4h", "1d"]
+          }
+        },
+        "required": ["value"],
+        "additionalProperties": false
+      },
+      "returns": "operation",
+      "availability": {
+        "modes": ["full", "local", "ha_addon"],
+        "requires_features": [],
+        "status": "active"
+      },
+      "since_version": "2026.03.15",
+      "deprecated_since": null,
+      "replacement": null
+    }
+  ],
+  "views": [
+    {
+      "view_key": "overview",
+      "title": "Overview",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "system",
+          "title": "System",
+          "widgets": [
+            {
+              "widget_key": "system_status",
+              "title": "Connection",
+              "kind": "status",
+              "source": "system.connection",
+              "entity_keys": ["system.connection", "system.mode"],
+              "command_keys": [],
+              "config": {}
+            },
+            {
+              "widget_key": "market_summary",
+              "title": "Market Summary",
+              "kind": "summary",
+              "source": "market.summary",
+              "entity_keys": ["market.summary.active_assets_count", "market.summary.hot_assets_count"],
+              "command_keys": [],
+              "config": {}
+            }
+          ]
+        },
+        {
+          "section_key": "portfolio",
+          "title": "Portfolio",
+          "widgets": [
+            {
+              "widget_key": "portfolio_summary",
+              "title": "Portfolio",
+              "kind": "summary",
+              "source": "portfolio.snapshot",
+              "entity_keys": ["portfolio.summary.portfolio_value", "portfolio.summary.open_positions", "notifications.enabled"],
+              "command_keys": [],
+              "config": {}
+            },
+            {
+              "widget_key": "portfolio_actions",
+              "title": "Portfolio Actions",
+              "kind": "actions",
+              "source": "portfolio.actions",
+              "entity_keys": [],
+              "command_keys": ["portfolio.sync"],
+              "config": {}
+            },
+            {
+              "widget_key": "market_actions",
+              "title": "Market Actions",
+              "kind": "actions",
+              "source": "market.actions",
+              "entity_keys": [],
+              "command_keys": ["market.refresh"],
+              "config": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view_key": "assets",
+      "title": "Assets",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "assets_snapshot",
+          "title": "Tracked Assets",
+          "widgets": [
+            {
+              "widget_key": "assets_table",
+              "title": "Assets Snapshot",
+              "kind": "table",
+              "source": "assets.snapshot",
+              "entity_keys": [],
+              "command_keys": [],
+              "config": {
+                "columns": ["symbol", "market_regime", "decision", "activity_bucket", "pattern_state"],
+                "max_items": 8
+              }
+            },
+            {
+              "widget_key": "market_activity",
+              "title": "Market Activity",
+              "kind": "summary",
+              "source": "market.summary",
+              "entity_keys": ["market.summary.active_assets_count", "market.summary.hot_assets_count"],
+              "command_keys": [],
+              "config": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view_key": "signals",
+      "title": "Signals",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "signals_snapshot",
+          "title": "Signals",
+          "widgets": [
+            {
+              "widget_key": "signals_table",
+              "title": "Latest Signals",
+              "kind": "table",
+              "source": "assets.snapshot",
+              "entity_keys": [],
+              "command_keys": [],
+              "config": {
+                "columns": ["symbol", "decision", "confidence", "market_regime", "pattern_state"],
+                "max_items": 8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view_key": "predictions",
+      "title": "Predictions",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "predictions_snapshot",
+          "title": "Predictions",
+          "widgets": [
+            {
+              "widget_key": "predictions_table",
+              "title": "Prediction Journal",
+              "kind": "table",
+              "source": "predictions.snapshot",
+              "entity_keys": [],
+              "command_keys": [],
+              "config": {
+                "columns": ["symbol", "prediction_event", "expected_move", "status", "confidence"],
+                "max_items": 8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view_key": "portfolio",
+      "title": "Portfolio",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "portfolio_summary",
+          "title": "Portfolio Summary",
+          "widgets": [
+            {
+              "widget_key": "portfolio_summary_detail",
+              "title": "Portfolio Totals",
+              "kind": "summary",
+              "source": "portfolio.snapshot",
+              "entity_keys": ["portfolio.summary.portfolio_value", "portfolio.summary.open_positions"],
+              "command_keys": [],
+              "config": {}
+            },
+            {
+              "widget_key": "portfolio_positions",
+              "title": "Open Positions",
+              "kind": "list",
+              "source": "portfolio.snapshot",
+              "entity_keys": [],
+              "command_keys": [],
+              "config": {
+                "path": "positions",
+                "fields": ["symbol", "position_value", "status", "timeframe"],
+                "max_items": 6
+              }
+            },
+            {
+              "widget_key": "portfolio_actions_full",
+              "title": "Portfolio Actions",
+              "kind": "actions",
+              "source": "portfolio.actions",
+              "entity_keys": [],
+              "command_keys": ["portfolio.sync"],
+              "config": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view_key": "integrations",
+      "title": "Integrations",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "notifications",
+          "title": "Notifications",
+          "widgets": [
+            {
+              "widget_key": "notifications_status",
+              "title": "Notifications",
+              "kind": "summary",
+              "source": "integrations.snapshot",
+              "entity_keys": ["notifications.enabled", "settings.notifications_enabled", "settings.default_timeframe"],
+              "command_keys": [],
+              "config": {}
+            },
+            {
+              "widget_key": "integrations_snapshot",
+              "title": "Integrations Snapshot",
+              "kind": "list",
+              "source": "integrations.snapshot",
+              "entity_keys": [],
+              "command_keys": [],
+              "config": {
+                "fields": ["enabled", "last_notification_at", "auth_status"],
+                "max_items": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view_key": "system",
+      "title": "System",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "system_runtime",
+          "title": "Runtime",
+          "widgets": [
+            {
+              "widget_key": "system_runtime_status",
+              "title": "Runtime Status",
+              "kind": "status",
+              "source": "system.connection",
+              "entity_keys": ["system.connection", "system.mode", "notifications.enabled"],
+              "command_keys": [],
+              "config": {}
+            },
+            {
+              "widget_key": "system_controls",
+              "title": "System Controls",
+              "kind": "actions",
+              "source": "system.actions",
+              "entity_keys": [],
+              "command_keys": ["portfolio.sync", "market.refresh"],
+              "config": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

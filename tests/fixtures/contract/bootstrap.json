@@ -1,0 +1,22 @@
+{
+  "instance": {
+    "instance_id": "iris-main-001",
+    "display_name": "IRIS Main",
+    "version": "2026.03.15",
+    "protocol_version": 1,
+    "catalog_version": "sha1:7d0a2802cbca",
+    "mode": "full",
+    "minimum_ha_integration_version": "0.1.0",
+    "recommended_ha_integration_version": "0.1.0"
+  },
+  "capabilities": {
+    "dashboard": true,
+    "commands": true,
+    "collections": true,
+    "promoted_entities": false
+  },
+  "catalog_url": "/api/v1/ha/catalog",
+  "dashboard_url": "/api/v1/ha/dashboard",
+  "ws_url": "/api/v1/ha/ws",
+  "state_url": "/api/v1/ha/state"
+}

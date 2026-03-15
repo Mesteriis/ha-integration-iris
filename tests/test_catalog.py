@@ -11,9 +11,17 @@ def test_parse_catalog_payload_accepts_backend_shaped_catalog() -> None:
 
     parsed = parse_catalog_payload(catalog)
 
-    assert parsed["catalog_version"] == "sha1:123456789abc"
-    assert parsed["entities"][1]["translation_key"] == "system_mode"
+    assert parsed["catalog_version"] == "sha1:7d0a2802cbca"
     assert parsed["collections"][0]["transport"] == "websocket"
+    assert [view["view_key"] for view in parsed["views"]] == [
+        "overview",
+        "assets",
+        "signals",
+        "predictions",
+        "portfolio",
+        "integrations",
+        "system",
+    ]
 
 
 def test_parse_catalog_payload_rejects_invalid_entity_definition() -> None:

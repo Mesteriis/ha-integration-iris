@@ -71,7 +71,7 @@ async def test_sensor_platform_materializes_catalog_driven_sensors(hass) -> None
     assert value_entity_id is not None
     assert hass.states.get(value_entity_id).state == "125000.0"
     assert hass.states.get(value_entity_id).attributes["unit_of_measurement"] == "USD"
-    assert registry.async_get(mode_entity_id).translation_key == "system_mode"
+    assert registry.async_get(mode_entity_id).original_name == "IRIS Mode"
 
 
 async def test_catalog_changed_adds_new_sensor_without_config_entry_reload(hass) -> None:

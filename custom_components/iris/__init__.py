@@ -97,12 +97,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: IrisConfigEntry) -> bool
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     await dashboard_runtime.async_setup()
     websocket.async_start()
-    entry.async_on_unload(websocket.async_stop)
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: IrisConfigEntry) -> bool:
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unloaded and getattr(entry, "runtime_data", None) is not None:
+        await entry.runtime_data.websocket.async_stop()
+        await entry.runtime_data.dashboard.async_stop()
+    return unloaded
 
 
 @callback

@@ -1,0 +1,264 @@
+{
+  "version": 1,
+  "slug": "iris",
+  "title": "IRIS Main",
+  "views": [
+    {
+      "view_key": "overview",
+      "title": "Overview",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "system",
+          "title": "System",
+          "widgets": [
+            {
+              "widget_key": "system_status",
+              "title": "Connection",
+              "kind": "status",
+              "source": "system.connection",
+              "entity_keys": ["system.connection", "system.mode"],
+              "command_keys": [],
+              "config": {}
+            },
+            {
+              "widget_key": "market_summary",
+              "title": "Market Summary",
+              "kind": "summary",
+              "source": "market.summary",
+              "entity_keys": ["market.summary.active_assets_count", "market.summary.hot_assets_count"],
+              "command_keys": [],
+              "config": {}
+            }
+          ]
+        },
+        {
+          "section_key": "portfolio",
+          "title": "Portfolio",
+          "widgets": [
+            {
+              "widget_key": "portfolio_summary",
+              "title": "Portfolio",
+              "kind": "summary",
+              "source": "portfolio.snapshot",
+              "entity_keys": ["portfolio.summary.portfolio_value", "portfolio.summary.open_positions", "notifications.enabled"],
+              "command_keys": [],
+              "config": {}
+            },
+            {
+              "widget_key": "portfolio_actions",
+              "title": "Portfolio Actions",
+              "kind": "actions",
+              "source": "portfolio.actions",
+              "entity_keys": [],
+              "command_keys": ["portfolio.sync"],
+              "config": {}
+            },
+            {
+              "widget_key": "market_actions",
+              "title": "Market Actions",
+              "kind": "actions",
+              "source": "market.actions",
+              "entity_keys": [],
+              "command_keys": ["market.refresh"],
+              "config": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view_key": "assets",
+      "title": "Assets",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "assets_snapshot",
+          "title": "Tracked Assets",
+          "widgets": [
+            {
+              "widget_key": "assets_table",
+              "title": "Assets Snapshot",
+              "kind": "table",
+              "source": "assets.snapshot",
+              "entity_keys": [],
+              "command_keys": [],
+              "config": {
+                "columns": ["symbol", "market_regime", "decision", "activity_bucket", "pattern_state"],
+                "max_items": 8
+              }
+            },
+            {
+              "widget_key": "market_activity",
+              "title": "Market Activity",
+              "kind": "summary",
+              "source": "market.summary",
+              "entity_keys": ["market.summary.active_assets_count", "market.summary.hot_assets_count"],
+              "command_keys": [],
+              "config": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view_key": "signals",
+      "title": "Signals",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "signals_snapshot",
+          "title": "Signals",
+          "widgets": [
+            {
+              "widget_key": "signals_table",
+              "title": "Latest Signals",
+              "kind": "table",
+              "source": "assets.snapshot",
+              "entity_keys": [],
+              "command_keys": [],
+              "config": {
+                "columns": ["symbol", "decision", "confidence", "market_regime", "pattern_state"],
+                "max_items": 8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view_key": "predictions",
+      "title": "Predictions",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "predictions_snapshot",
+          "title": "Predictions",
+          "widgets": [
+            {
+              "widget_key": "predictions_table",
+              "title": "Prediction Journal",
+              "kind": "table",
+              "source": "predictions.snapshot",
+              "entity_keys": [],
+              "command_keys": [],
+              "config": {
+                "columns": ["symbol", "prediction_event", "expected_move", "status", "confidence"],
+                "max_items": 8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view_key": "portfolio",
+      "title": "Portfolio",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "portfolio_summary",
+          "title": "Portfolio Summary",
+          "widgets": [
+            {
+              "widget_key": "portfolio_summary_detail",
+              "title": "Portfolio Totals",
+              "kind": "summary",
+              "source": "portfolio.snapshot",
+              "entity_keys": ["portfolio.summary.portfolio_value", "portfolio.summary.open_positions"],
+              "command_keys": [],
+              "config": {}
+            },
+            {
+              "widget_key": "portfolio_positions",
+              "title": "Open Positions",
+              "kind": "list",
+              "source": "portfolio.snapshot",
+              "entity_keys": [],
+              "command_keys": [],
+              "config": {
+                "path": "positions",
+                "fields": ["symbol", "position_value", "status", "timeframe"],
+                "max_items": 6
+              }
+            },
+            {
+              "widget_key": "portfolio_actions_full",
+              "title": "Portfolio Actions",
+              "kind": "actions",
+              "source": "portfolio.actions",
+              "entity_keys": [],
+              "command_keys": ["portfolio.sync"],
+              "config": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view_key": "integrations",
+      "title": "Integrations",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "notifications",
+          "title": "Notifications",
+          "widgets": [
+            {
+              "widget_key": "notifications_status",
+              "title": "Notifications",
+              "kind": "summary",
+              "source": "integrations.snapshot",
+              "entity_keys": ["notifications.enabled", "settings.notifications_enabled", "settings.default_timeframe"],
+              "command_keys": [],
+              "config": {}
+            },
+            {
+              "widget_key": "integrations_snapshot",
+              "title": "Integrations Snapshot",
+              "kind": "list",
+              "source": "integrations.snapshot",
+              "entity_keys": [],
+              "command_keys": [],
+              "config": {
+                "fields": ["enabled", "last_notification_at", "auth_status"],
+                "max_items": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "view_key": "system",
+      "title": "System",
+      "kind": "dashboard_view",
+      "sections": [
+        {
+          "section_key": "system_runtime",
+          "title": "Runtime",
+          "widgets": [
+            {
+              "widget_key": "system_runtime_status",
+              "title": "Runtime Status",
+              "kind": "status",
+              "source": "system.connection",
+              "entity_keys": ["system.connection", "system.mode", "notifications.enabled"],
+              "command_keys": [],
+              "config": {}
+            },
+            {
+              "widget_key": "system_controls",
+              "title": "System Controls",
+              "kind": "actions",
+              "source": "system.actions",
+              "entity_keys": [],
+              "command_keys": ["portfolio.sync", "market.refresh"],
+              "config": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

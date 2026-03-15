@@ -1,0 +1,129 @@
+{
+  "projection_epoch": "20260315T000000Z-stage5",
+  "sequence": 4,
+  "entities": {
+    "system.connection": {
+      "state": true,
+      "attributes": {
+        "instance_id": "iris-main-001",
+        "catalog_version": "sha1:7d0a2802cbca",
+        "protocol_version": 1
+      }
+    },
+    "system.mode": {
+      "state": "full",
+      "attributes": {}
+    },
+    "market.summary.active_assets_count": {
+      "state": 4,
+      "attributes": {}
+    },
+    "market.summary.hot_assets_count": {
+      "state": 1,
+      "attributes": {}
+    },
+    "portfolio.summary.portfolio_value": {
+      "state": 125000.0,
+      "attributes": {
+        "available_capital": 45000.0
+      }
+    },
+    "portfolio.summary.open_positions": {
+      "state": 2,
+      "attributes": {
+        "max_positions": 5
+      }
+    },
+    "notifications.enabled": {
+      "state": true,
+      "attributes": {
+        "recent_notifications": 1
+      }
+    },
+    "settings.notifications_enabled": {
+      "state": true,
+      "attributes": {
+        "command_key": "settings.notifications_enabled.set"
+      }
+    },
+    "settings.default_timeframe": {
+      "state": "15m",
+      "attributes": {
+        "command_key": "settings.default_timeframe.set",
+        "options": ["15m", "1h", "4h", "1d"]
+      }
+    },
+    "actions.portfolio_sync": {
+      "state": "available",
+      "attributes": {
+        "command_key": "portfolio.sync"
+      }
+    },
+    "actions.market_refresh": {
+      "state": "available",
+      "attributes": {
+        "command_key": "market.refresh"
+      }
+    }
+  },
+  "collections": {
+    "assets.snapshot": {
+      "BTCUSD": {
+        "symbol": "BTCUSD",
+        "market_regime": "bull_trend",
+        "decision": "BUY",
+        "confidence": 0.82,
+        "activity_bucket": "HOT",
+        "pattern_state": "boosted"
+      },
+      "ETHUSD": {
+        "symbol": "ETHUSD",
+        "market_regime": "distribution",
+        "decision": "HOLD",
+        "confidence": 0.55,
+        "activity_bucket": "WARM"
+      }
+    },
+    "portfolio.snapshot": {
+      "summary": {
+        "portfolio_value": 125000.0,
+        "available_capital": 45000.0,
+        "allocated_capital": 80000.0,
+        "open_positions": 2,
+        "max_positions": 5
+      },
+      "positions": [
+        {
+          "symbol": "BTCUSD",
+          "position_value": 50000.0,
+          "status": "open",
+          "timeframe": 240
+        },
+        {
+          "symbol": "ETHUSD",
+          "position_value": 30000.0,
+          "status": "partial",
+          "timeframe": 60
+        }
+      ]
+    },
+    "predictions.snapshot": {
+      "prd_001": {
+        "symbol": "BTCUSD",
+        "prediction_event": "breakout_followthrough",
+        "expected_move": "up",
+        "status": "confirmed",
+        "confidence": 0.74
+      }
+    },
+    "integrations.snapshot": {
+      "notifications": {
+        "enabled": true,
+        "last_notification_at": "2026-03-15T11:30:00+00:00"
+      },
+      "telegram": {
+        "auth_status": "connected"
+      }
+    }
+  }
+}
