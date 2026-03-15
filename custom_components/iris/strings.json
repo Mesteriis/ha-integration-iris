@@ -1,0 +1,50 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to IRIS",
+        "description": "Enter the IRIS backend URL.",
+        "data": {
+          "api_url": "IRIS URL",
+          "token": "Auth token"
+        }
+      },
+      "zeroconf_confirm": {
+        "title": "Connect discovered IRIS instance",
+        "description": "Confirm connection to {name} at {host}.",
+        "data": {
+          "token": "Auth token"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reconnect IRIS",
+        "description": "Enter a new auth token for the configured IRIS instance.",
+        "data": {
+          "token": "Auth token"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure IRIS",
+        "description": "Update the backend URL for {name}.",
+        "data": {
+          "api_url": "IRIS URL"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to IRIS.",
+      "invalid_auth": "The IRIS credentials are invalid.",
+      "invalid_bootstrap": "IRIS returned an invalid bootstrap payload.",
+      "unsupported_protocol": "This IRIS backend uses an unsupported protocol version.",
+      "integration_too_old": "This integration version is too old for the IRIS backend.",
+      "wrong_account": "The selected IRIS instance does not match the configured entry."
+    },
+    "abort": {
+      "already_configured": "This IRIS instance is already configured.",
+      "invalid_discovery": "The discovered IRIS service metadata is invalid.",
+      "reauth_successful": "IRIS credentials updated.",
+      "reconfigure_successful": "IRIS backend URL updated.",
+      "unknown_entry": "The IRIS config entry could not be found."
+    }
+  }
+}

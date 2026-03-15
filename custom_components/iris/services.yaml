@@ -1,0 +1,50 @@
+execute_command:
+  name: Execute IRIS Command
+  description: Execute a catalog command against the connected IRIS backend.
+  fields:
+    command:
+      name: Command
+      description: IRIS command key from the current catalog.
+      required: true
+      example: portfolio.sync
+      selector:
+        text:
+    payload:
+      name: Payload
+      description: Optional JSON payload for the command.
+      required: false
+      example:
+        symbol: BTCUSD
+      selector:
+        object:
+    instance_id:
+      name: Instance ID
+      description: Optional IRIS instance ID when multiple integrations are loaded.
+      required: false
+      example: iris-main-001
+      selector:
+        text:
+
+sync_portfolio:
+  name: Sync Portfolio
+  description: Trigger a portfolio synchronization operation on IRIS.
+  fields:
+    instance_id:
+      name: Instance ID
+      description: Optional IRIS instance ID when multiple integrations are loaded.
+      required: false
+      example: iris-main-001
+      selector:
+        text:
+
+refresh_market:
+  name: Refresh Market
+  description: Trigger a market refresh operation on IRIS.
+  fields:
+    instance_id:
+      name: Instance ID
+      description: Optional IRIS instance ID when multiple integrations are loaded.
+      required: false
+      example: iris-main-001
+      selector:
+        text:
