@@ -543,7 +543,7 @@ def _format_summary_markdown(data: Any) -> str:
 
 
 def _compact_markdown_value(value: Any) -> str:
-    if isinstance(value, (str, int, float, bool)) or value is None:
+    if isinstance(value, str | int | float | bool) or value is None:
         return str(value)
     return json.dumps(value, sort_keys=True, separators=(",", ":"))
 

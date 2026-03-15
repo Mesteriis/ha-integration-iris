@@ -56,7 +56,7 @@ class IrisCatalogSensorEntity(SensorEntity):
         state = self._store.entity_state(self._state_source).get("state")
         if isinstance(state, bool):
             return "on" if state else "off"
-        if isinstance(state, (str, int, float)) or state is None:
+        if isinstance(state, str | int | float) or state is None:
             return state
         return str(state)
 

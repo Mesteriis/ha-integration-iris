@@ -56,7 +56,7 @@ class IrisCatalogBinarySensorEntity(BinarySensorEntity):
         state = self._store.entity_state(self._state_source).get("state")
         if isinstance(state, bool):
             return state
-        if isinstance(state, (int, float)):
+        if isinstance(state, int | float):
             return bool(state)
         if isinstance(state, str):
             normalized = state.strip().lower()
