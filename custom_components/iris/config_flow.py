@@ -10,6 +10,7 @@ from homeassistant.components import zeroconf
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_TOKEN
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers.service_info.zeroconf import ZeroconfServiceInfo
 
 from .client import IrisApiClient, IrisAuthenticationError, IrisConnectionError, IrisProtocolError
 from .const import CONF_API_URL, CONF_INSTANCE_ID, DOMAIN
@@ -53,7 +54,7 @@ class IrisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_zeroconf(self, discovery_info: zeroconf.ZeroconfServiceInfo) -> FlowResult:
+    async def async_step_zeroconf(self, discovery_info: ZeroconfServiceInfo) -> FlowResult:
         try:
             discovery = _parse_discovery_info(discovery_info)
         except ValueError:
@@ -266,7 +267,7 @@ class IrisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return vol.Schema(fields)
 
 
-def _parse_discovery_info(discovery_info: zeroconf.ZeroconfServiceInfo) -> IrisDiscoveryContext:
+def _parse_discovery_info(discovery_info: ZeroconfServiceInfo) -> IrisDiscoveryContext:
     instance_id = _property_as_str(discovery_info.properties, "instance_id")
     if not instance_id:
         raise ValueError("Discovery payload must include instance_id.")

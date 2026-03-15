@@ -19,7 +19,8 @@ The integration is server-driven:
 ## Local Development
 
 ```bash
-uv sync --group dev
+pyenv shell 3.14.2
+uv sync --group dev --python 3.14.2
 uv run ruff check custom_components tests
 uv run pytest tests -q
 ```
@@ -37,5 +38,7 @@ pyproject.toml           # isolated HA dev environment
 - Protocol version: `1`
 - Backend version: `2026.03.15+`
 - Integration version: `0.1.0`
+- Home Assistant baseline: `2026.3.1`
+- Python baseline: `3.14.2+`
 
 Main IRIS repository: `git@github.com:Mesteriis/iris.git`

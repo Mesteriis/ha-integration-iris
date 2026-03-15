@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, patch
 
 from custom_components.iris.config_flow import RECONFIGURE_SOURCE, IrisConfigFlow
 from custom_components.iris.const import CONF_API_URL, CONF_INSTANCE_ID, DOMAIN
+from homeassistant.config_entries import SOURCE_RECONFIGURE
 from homeassistant.const import CONF_TOKEN
 from homeassistant.data_entry_flow import FlowResultType
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -166,4 +167,65 @@ async def test_reconfigure_flow_updates_backend_url_for_existing_entry(hass) -> 
     updated_entry = hass.config_entries.async_get_entry(entry.entry_id)
     assert updated_entry is not None
     assert updated_entry.data[CONF_API_URL] == "http://192.168.1.55:9000"
+    assert updated_entry.data[CONF_TOKEN] == "stage3-token"
+
+
+async def test_native_reconfigure_flow_manager_updates_backend_url_for_existing_entry(hass) -> None:
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title="IRIS Main",
+        unique_id="iris-main-001",
+        data={
+            CONF_API_URL: "http://localhost:8000",
+            CONF_INSTANCE_ID: "iris-main-001",
+            CONF_TOKEN: "stage3-token",
+        },
+    )
+    entry.add_to_hass(hass)
+
+    with (
+        patch(
+            "custom_components.iris.config_flow.IrisApiClient.async_get_bootstrap",
+            new=AsyncMock(return_value=build_bootstrap()),
+        ),
+        patch(
+            "custom_components.iris.client.IrisApiClient.async_get_bootstrap",
+            new=AsyncMock(return_value=build_bootstrap()),
+        ),
+        patch(
+            "custom_components.iris.client.IrisApiClient.async_get_catalog",
+            new=AsyncMock(return_value={"version": 1, "entities": [], "collections": [], "commands": []}),
+        ),
+        patch(
+            "custom_components.iris.client.IrisApiClient.async_get_dashboard",
+            new=AsyncMock(return_value={"version": 1, "slug": "iris", "title": "IRIS", "views": []}),
+        ),
+        patch(
+            "custom_components.iris.client.IrisApiClient.async_get_state",
+            new=AsyncMock(return_value={"projection_epoch": "20260315T000000Z", "sequence": 0, "entities": []}),
+        ),
+        patch(
+            "custom_components.iris.IrisWebSocketClient.async_start",
+            autospec=True,
+        ),
+    ):
+        result = await hass.config_entries.flow.async_init(
+            DOMAIN,
+            context={"source": SOURCE_RECONFIGURE, "entry_id": entry.entry_id, "unique_id": entry.unique_id},
+        )
+
+        assert result["type"] is FlowResultType.FORM
+        assert result["step_id"] == RECONFIGURE_SOURCE
+
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {CONF_API_URL: "http://192.168.1.77:9000"},
+        )
+        await hass.async_block_till_done()
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "reconfigure_successful"
+    updated_entry = hass.config_entries.async_get_entry(entry.entry_id)
+    assert updated_entry is not None
+    assert updated_entry.data[CONF_API_URL] == "http://192.168.1.77:9000"
     assert updated_entry.data[CONF_TOKEN] == "stage3-token"

@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from custom_components.iris.bootstrap import IrisBootstrap, parse_bootstrap_payload
-from homeassistant.components.zeroconf import ZeroconfServiceInfo
+from homeassistant.helpers.service_info.zeroconf import ZeroconfServiceInfo
 
 _FIXTURES_ROOT = Path(__file__).resolve().parent / "fixtures" / "contract"
 

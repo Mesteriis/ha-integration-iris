@@ -2,14 +2,13 @@
 name = "iris-ha-integration"
 version = "0.1.0"
 description = "IRIS Home Assistant custom integration"
-requires-python = ">=3.11,<3.13"
+requires-python = ">=3.14.2,<3.15"
 dependencies = []
 
 [dependency-groups]
 dev = [
-    "homeassistant==2024.3.3",
-    "pytest-homeassistant-custom-component==0.13.109",
-    "zeroconf==0.148.0",
+    "homeassistant==2026.3.1",
+    "pytest-homeassistant-custom-component==0.13.317",
 ]
 
 [tool.pytest.ini_options]
@@ -17,7 +16,7 @@ testpaths = ["tests"]
 asyncio_mode = "auto"
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
 line-length = 120
 src = ["custom_components", "tests"]
 

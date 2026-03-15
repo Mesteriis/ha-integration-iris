@@ -380,8 +380,7 @@ class IrisDashboardRuntime:
 
 
 async def _async_ensure_lovelace(hass: HomeAssistant) -> bool:
-    current = hass.data.get(LOVELACE_DOMAIN)
-    if isinstance(current, dict) and isinstance(current.get("dashboards"), dict):
+    if _runtime_dashboards(hass) is not None:
         return True
     return await async_setup_component(hass, LOVELACE_DOMAIN, {LOVELACE_DOMAIN: {"mode": MODE_STORAGE}})
 
@@ -395,8 +394,8 @@ async def _async_upsert_dashboard_metadata(
 ) -> dict[str, Any]:
     collection = lovelace_dashboard.DashboardsCollection(hass)
     await collection.async_load()
-    runtime_dashboards = hass.data.get(LOVELACE_DOMAIN, {}).get("dashboards", {})
-    runtime_dashboard = runtime_dashboards.get(url_path) if isinstance(runtime_dashboards, dict) else None
+    runtime_dashboards = _runtime_dashboards(hass) or {}
+    runtime_dashboard = runtime_dashboards.get(url_path)
     runtime_metadata = getattr(runtime_dashboard, "config", None)
     existing = next(
         (item for item in collection.data.values() if isinstance(item, dict) and item.get(CONF_URL_PATH) == url_path),
@@ -443,7 +442,9 @@ async def _async_save_dashboard_config(
     expected_previous_hash: str | None,
     new_render_hash: str,
 ) -> dict[str, Any]:
-    dashboards = hass.data[LOVELACE_DOMAIN]["dashboards"]
+    dashboards = _runtime_dashboards(hass)
+    if dashboards is None:
+        raise RuntimeError("Home Assistant Lovelace dashboards registry is unavailable.")
     url_path = str(metadata[CONF_URL_PATH])
     config_store = dashboards.get(url_path)
     if config_store is None:
@@ -476,6 +477,16 @@ async def _async_save_dashboard_config(
         "lovelace_management_mode": "managed",
         "lovelace_override_detected": False,
     }
+
+
+def _runtime_dashboards(hass: HomeAssistant) -> dict[str, Any] | None:
+    runtime = hass.data.get(LOVELACE_DOMAIN)
+    dashboards = getattr(runtime, "dashboards", None)
+    if isinstance(dashboards, dict):
+        return dashboards
+    if isinstance(runtime, dict) and isinstance(runtime.get("dashboards"), dict):
+        return runtime["dashboards"]
+    return None
 
 
 @callback

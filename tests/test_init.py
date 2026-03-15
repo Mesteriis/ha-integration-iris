@@ -11,6 +11,10 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from .common import build_bootstrap, build_catalog, build_dashboard, build_state_snapshot
 
 
+def _dashboard_store(hass):
+    return hass.data["lovelace"].dashboards["lovelace-iris-iris-main-001"]
+
+
 async def test_setup_entry_populates_runtime_data_and_starts_websocket(hass) -> None:
     entry = MockConfigEntry(
         domain=DOMAIN,
@@ -61,7 +65,7 @@ async def test_setup_entry_populates_runtime_data_and_starts_websocket(hass) -> 
     assert runtime.dashboard.summary()["lovelace_management_mode"] == "managed"
     assert runtime.dashboard.summary()["lovelace_dashboard_url_path"] == "lovelace-iris-iris-main-001"
     assert "lovelace-iris-iris-main-001" in hass.data[DATA_PANELS]
-    lovelace_config = await hass.data["lovelace"]["dashboards"]["lovelace-iris-iris-main-001"].async_load(False)
+    lovelace_config = await _dashboard_store(hass).async_load(False)
     assert [view["title"] for view in lovelace_config["views"]] == [
         "Overview",
         "Assets",
@@ -154,7 +158,7 @@ async def test_dashboard_runtime_publishes_initial_and_refresh_events(hass) -> N
     assert dashboard_events[1]["widgets_count"] == 1
     assert dashboard_events[1]["lovelace_synced"] is True
     assert entry.runtime_data.dashboard.summary()["title"] == "IRIS Main Updated"
-    lovelace_config = await hass.data["lovelace"]["dashboards"]["lovelace-iris-iris-main-001"].async_load(False)
+    lovelace_config = await _dashboard_store(hass).async_load(False)
     assert lovelace_config["title"] == "IRIS Main Updated"
     assert lovelace_config["views"][0]["title"] == "Overview"
 
@@ -212,7 +216,7 @@ async def test_dashboard_runtime_live_refreshes_collection_widgets_from_store(ha
     await asyncio.sleep(0.3)
     await hass.async_block_till_done()
 
-    lovelace_config = await hass.data["lovelace"]["dashboards"]["lovelace-iris-iris-main-001"].async_load(False)
+    lovelace_config = await _dashboard_store(hass).async_load(False)
     assets_grid = lovelace_config["views"][1]["cards"][0]["cards"][1]["cards"][1]
     rendered_cards = assets_grid["cards"]
     assert any(card.get("title") == "SOLUSD" for card in rendered_cards)
@@ -251,7 +255,7 @@ async def test_dashboard_runtime_preserves_local_override_layout(hass) -> None:
         assert await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
 
-    dashboard_store = hass.data["lovelace"]["dashboards"]["lovelace-iris-iris-main-001"]
+    dashboard_store = _dashboard_store(hass)
     local_override = {
         "title": "IRIS Custom",
         "views": [{"title": "Custom View", "path": "custom", "cards": [{"type": "markdown", "content": "local"}]}],
