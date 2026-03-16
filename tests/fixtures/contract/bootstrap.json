@@ -4,7 +4,7 @@
     "display_name": "IRIS Main",
     "version": "2026.03.15",
     "protocol_version": 1,
-    "catalog_version": "sha1:7d0a2802cbca",
+    "catalog_version": "sha256:59378795ec7b",
     "mode": "full",
     "minimum_ha_integration_version": "0.1.0",
     "recommended_ha_integration_version": "0.1.0"

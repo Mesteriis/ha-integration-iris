@@ -6,7 +6,7 @@
       "state": true,
       "attributes": {
         "instance_id": "iris-main-001",
-        "catalog_version": "sha1:7d0a2802cbca",
+        "catalog_version": "sha256:59378795ec7b",
         "protocol_version": 1
       }
     },
